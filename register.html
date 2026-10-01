@@ -16,6 +16,17 @@
             <div>
                 <input type="text" id="name" placeholder="အမည်" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
+            
+            <!-- ငွေလွှဲမည့် နည်းလမ်းရွေးချယ်ရန် (KPay / Wave) -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">🏦 ငွေပေးချေမည့် နည်းလမ်း</label>
+                <select id="paymentMethod" required class="w-full p-2.5 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="" disabled selected>KPay (သို့မဟုတ်) Wave ရွေးပါ</option>
+                    <option value="KPay">KBZ Pay (KPay)</option>
+                    <option value="Wave">Wave Money</option>
+                </select>
+            </div>
+
             <div>
                 <input type="text" id="phone" placeholder="ဖုန်းနံပါတ် (KPay / Wave နံပါတ်)" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
@@ -23,6 +34,7 @@
                 <input type="password" id="password" placeholder="စကားဝှက် (Password)" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
             
+            <!-- မှတ်ပုံတင် ရှေ့/နောက် ပုံတင်ရန် -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">🪪 မှတ်ပုံတင် (အရှေ့) ပုံတင်ရန်</label>
                 <input type="file" id="idCardFrontFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
@@ -32,6 +44,7 @@
                 <input type="file" id="idCardBackFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
             </div>
             
+            <!-- မိမိ၏ QR Code ပုံတင်ရန် -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">💳 မိမိ၏ KPay / Wave QR Code ပုံတင်ရန်</label>
                 <input type="file" id="payQrFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
@@ -44,7 +57,6 @@
     </div>
 
     <script>
-        // သင့်ရဲ့ Supabase အချက်အလက်များ
         const SUPABASE_URL = 'https://jmnkghz.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptbmtnaHpzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg0NDI5NjYxLCJleHAiOjIxMDAwMDU2NjF9.sQSU7CGTBXDWFQ_QtPiixJC';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -55,6 +67,7 @@
             e.preventDefault();
 
             const name = document.getElementById('name').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
             const phone = document.getElementById('phone').value;
             const password = document.getElementById('password').value;
 
@@ -65,29 +78,34 @@
             try {
                 alert('ပုံများကို တင်နေပါသည်... ခဏစောင့်ပါ');
 
+                // ၁။ မှတ်ပုံတင် ရှေ့ပုံတင်ခြင်း
                 const frontExt = frontFile.name.split('.').pop();
                 const frontFileName = `front_${Date.now()}.${frontExt}`;
                 const { error: frontError } = await supabase.storage.from('images').upload(frontFileName, frontFile);
                 if (frontError) throw frontError;
                 const frontImageUrl = supabase.storage.from('images').getPublicUrl(frontFileName).data.publicUrl;
 
+                // ၂။ မှတ်ပုံတင် နောက်ပုံတင်ခြင်း
                 const backExt = backFile.name.split('.').pop();
                 const backFileName = `back_${Date.now()}.${backExt}`;
                 const { error: backError } = await supabase.storage.from('images').upload(backFileName, backFile);
                 if (backError) throw backError;
                 const backImageUrl = supabase.storage.from('images').getPublicUrl(backFileName).data.publicUrl;
 
+                // ၃။ QR Code ပုံတင်ခြင်း
                 const qrExt = qrFile.name.split('.').pop();
                 const qrFileName = `qr_${Date.now()}.${qrExt}`;
                 const { error: qrError } = await supabase.storage.from('images').upload(qrFileName, qrFile);
                 if (qrError) throw qrError;
                 const qrImageUrl = supabase.storage.from('images').getPublicUrl(qrFileName).data.publicUrl;
 
+                // ၄။ Database သို့ သိမ်းဆືခြင်း (Payment Method အပါအဝင်)
                 const { error: dbError } = await supabase
                     .from('users')
                     .insert([
                         { 
                             name: name, 
+                            payment_method: paymentMethod,
                             phone: phone, 
                             password: password, 
                             idCardFront: frontImageUrl, 
