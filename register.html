@@ -1,57 +1,112 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="my">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Account ဖွင့်ရန် - C2C Marketplace</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>အကောင့်ဖွင့်ရန် - Mymarketplace</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-4">
-  <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md border mt-5">
-    <h2 class="text-xl font-bold mb-4 text-center text-indigo-600">📝 အကောင့်သစ်ဖွင့်ရန်</h2>
-    <p class="text-xs text-gray-500 mb-4 text-center">အကောင့်ဖွင့်ခ ၃,၀၀၀ ကျပ် လွှဲပြောင်းပြီး အချက်အလက်များ ဖြည့်သွင်းပါ</p>
-    
-    <form id="regForm" class="space-y-3">
-      <input type="text" id="regName" placeholder="အမည်" required class="w-full p-2.5 border rounded-lg text-sm">
-      <input type="tel" id="regPhone" placeholder="ဖုန်းနံပါတ် (KPay / Wave နံပါတ်)" required class="w-full p-2.5 border rounded-lg text-sm">
-      <input type="password" id="regPassword" placeholder="စကားဝှက် (Password)" required class="w-full p-2.5 border rounded-lg text-sm">
-      
-      <div class="border-t pt-3">
-        <label class="block text-xs font-bold text-gray-700 mb-1">🪪 မှတ်ပုံတင် ရှေ့/နောက် ပုံ Link များ</label>
-      <label class="block text-sm font-medium text-gray-700 mb-1">🪪 မှတ်ပုံတင် (အရှေ့) ပုံတင်ရန်</label>
-<input type="file" id="idCardFrontFile" accept="image/*" class="w-full p-2.5 border rounded-lg bg-white" required>
-        <label class="block text-sm font-medium text-gray-700 mb-1">🪪 မှတ်ပုံတင် (အနောက်) ပုံတင်ရန်</label>
-<input type="file" id="idCardBackFile" accept="image/*" class="w-full p-2.5 border rounded-lg bg-white" required>label   <div class="border-t pt-3">
-        <label class="block text-sm font-medium text-gray-700 mb-1">💳 မိမိ၏ KPay / Wave QR Code ပုံတင်ရန်</label>
-<input type="file" id="payQrFile" accept="image/*" class="w-full p-2.5 border rounded-lg bg-white" required>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center text-indigo-600 mb-4">📝 အကောင့်သစ်ဖွင့်ရန်</h2>
+        <p class="text-sm text-gray-600 text-center mb-6">အကောင့်ဖွင့်ခ ၂,၀၀၀ ကျပ် လွှဲပြောင်းပြီး အချက်အလက်များကို ဖြည့်သွင်းပါ</p>
+        
+        <form id="registerForm" class="space-y-4">
+            <div>
+                <input type="text" id="name" placeholder="အမည်" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+                <input type="text" id="phone" placeholder="ဖုန်းနံပါတ် (KPay / Wave နံပါတ်)" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="စကားဝှက် (Password)" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">🪪 မှတ်ပုံတင် (အရှေ့) ပုံတင်ရန်</label>
+                <input type="file" id="idCardFrontFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">🪪 မှတ်ပုံတင် (အနောက်) ပုံတင်ရန်</label>
+                <input type="file" id="idCardBackFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">💳 မိမိ၏ KPay / Wave QR Code ပုံတင်ရန်</label>
+                <input type="file" id="payQrFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
+            </div>
 
-      <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700 mt-2">
-        အကောင့်ဖွင့်ရန် လျှောက်ထားမည်
-      </button>
-    </form>
-  </div>
+            <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700 transition">
+                အကောင့်ဖွင့်ရန် လျှောက်ထားမည်
+            </button>
+        </form>
+    </div>
 
-  <script>
-    const SUPABASE_URL = 'https://jtczoggoxwjavjmnkghz.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_GT4Qk9qsU7CGTBXDWFQ_QtPiixjC'
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <script>
+        // သင့်ရဲ့ Supabase အချက်အလက်များ
+        const SUPABASE_URL = 'https://jmnkghz.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptbmtnaHpzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg0NDI5NjYxLCJleHAiOjIxMDAwMDU2NjF9.sQSU7CGTBXDWFQ_QtPiixJC';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    document.getElementById('regForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const user = {
-        name: document.getElementById('regName').value,
-        phone: document.getElementById('regPhone').value,
-        password: document.getElementById('regPassword').value,
-        nid_front_url: document.getElementById('nidFront').value,
-        nid_back_url: document.getElementById('nidBack').value,
-        payment_qr_url: document.getElementById('payQr').value,
-        status: 'pending_kyc'
-      };
+        const form = document.getElementById('registerForm');
 
-      const { error } = await supabase.from('users').insert([user]);
-      if (error) {
-        alert('မအောင်မြင်ပါ: ' + error.message);
-      } else {
-        alert('အကောင့်လျှောက်ထားပြီးပါပြီ! Admin က စစ်ဆေးပြီးပါက အကောင့်ပွင့်ပါမည်။');
-        document.getElementById('regForm').reset();
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            const frontFile = document.getElementById('idCardFrontFile').files[0];
+            const backFile = document.getElementById('idCardBackFile').files[0];
+            const qrFile = document.getElementById('payQrFile').files[0];
+
+            try {
+                alert('ပုံများကို တင်နေပါသည်... ခဏစောင့်ပါ');
+
+                const frontExt = frontFile.name.split('.').pop();
+                const frontFileName = `front_${Date.now()}.${frontExt}`;
+                const { error: frontError } = await supabase.storage.from('images').upload(frontFileName, frontFile);
+                if (frontError) throw frontError;
+                const frontImageUrl = supabase.storage.from('images').getPublicUrl(frontFileName).data.publicUrl;
+
+                const backExt = backFile.name.split('.').pop();
+                const backFileName = `back_${Date.now()}.${backExt}`;
+                const { error: backError } = await supabase.storage.from('images').upload(backFileName, backFile);
+                if (backError) throw backError;
+                const backImageUrl = supabase.storage.from('images').getPublicUrl(backFileName).data.publicUrl;
+
+                const qrExt = qrFile.name.split('.').pop();
+                const qrFileName = `qr_${Date.now()}.${qrExt}`;
+                const { error: qrError } = await supabase.storage.from('images').upload(qrFileName, qrFile);
+                if (qrError) throw qrError;
+                const qrImageUrl = supabase.storage.from('images').getPublicUrl(qrFileName).data.publicUrl;
+
+                const { error: dbError } = await supabase
+                    .from('users')
+                    .insert([
+                        { 
+                            name: name, 
+                            phone: phone, 
+                            password: password, 
+                            idCardFront: frontImageUrl, 
+                            idCardBack: backImageUrl, 
+                            payQr: qrImageUrl,
+                            status: 'pending' 
+                        }
+                    ]);
+
+                if (dbError) throw dbError;
+
+                alert('အကောင့်လျှောက်လွှာ တင်ခြင်း အောင်မြင်ပါသည်!');
+                form.reset();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('အမှားအယွင်း ဖြစ်ပေါ်သွားပါသည်: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
