@@ -7,26 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-4">
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
-        <h2 class="text-2xl font-bold text-indigo-600 mb-6 text-center">🛡️ Admin Dashboard - အကောင့်လျှောက်လွှာများ</h2>
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-indigo-600">🛡️ Admin Dashboard - အကောင့်လျှောက်လွှာများ</h2>
+            <button onclick="fetchUsers()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700">🔄 Data Refresh</button>
+        </div>
         
-        <div id="statusMessage" class="text-center py-4 text-gray-600 font-medium">အချက်အလက်များကို ရယူနေပါသည်...</div>
+        <div id="statusMessage" class="text-center py-8 text-gray-600 font-medium text-lg">အချက်အလက်များကို ရယူနေပါသည်...</div>
         
         <div class="overflow-x-auto">
             <table class="w-full border-collapse border border-gray-200 hidden" id="userTable">
                 <thead>
                     <tr class="bg-indigo-50 text-indigo-700 text-sm">
-                        <th class="border border-gray-200 p-2.5">အမည်</th>
-                        <th class="border border-gray-200 p-2.5">ငွေပေးချေမှု</th>
-                        <th class="border border-gray-200 p-2.5">ဖုန်းနံပါတ်</th>
-                        <th class="border border-gray-200 p-2.5">မှတ်ပုံတင် (ရှေ့/နောက်)</th>
-                        <th class="border border-gray-200 p-2.5">QR Code</th>
-                        <th class="border border-gray-200 p-2.5">အခြေအနေ</th>
-                        <th class="border border-gray-200 p-2.5">လုပ်ဆောင်ချက်</th>
+                        <th class="border border-gray-200 p-3">အမည်</th>
+                        <th class="border border-gray-200 p-3">ငွေပေးချေမှု</th>
+                        <th class="border border-gray-200 p-3">ဖုန်းနံပါတ်</th>
+                        <th class="border border-gray-200 p-3">မှတ်ပုံတင် (ရှေ့/နောက်)</th>
+                        <th class="border border-gray-200 p-3">QR Code</th>
+                        <th class="border border-gray-200 p-3">အခြေအနေ</th>
+                        <th class="border border-gray-200 p-3">လုပ်ဆောင်ချက်</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody" class="text-sm text-gray-700">
-                    <!-- Data will be loaded here dynamically -->
+                    <!-- Dynamic Data -->
                 </tbody>
             </table>
         </div>
@@ -40,6 +43,10 @@
             const statusMessage = document.getElementById('statusMessage');
             const userTable = document.getElementById('userTable');
             const userTableBody = document.getElementById('userTableBody');
+
+            statusMessage.style.display = 'block';
+            statusMessage.innerText = 'အချက်အလက်များကို ရယူနေပါသည်...';
+            userTable.classList.add('hidden');
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*`, {
@@ -62,7 +69,7 @@
                 }
 
                 statusMessage.style.display = 'none';
-                userTable.style.display = 'table';
+                userTable.classList.remove('hidden');
                 userTableBody.innerHTML = '';
 
                 users.forEach(user => {
@@ -70,23 +77,23 @@
                     row.className = 'hover:bg-gray-50 text-center';
                     
                     row.innerHTML = `
-                        <td class="border border-gray-200 p-2.5 font-medium">${user.name || '-'}</td>
-                        <td class="border border-gray-200 p-2.5"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">${user.payment_method || '-'}</span></td>
-                        <td class="border border-gray-200 p-2.5">${user.phone || '-'}</td>
-                        <td class="border border-gray-200 p-2.5 space-x-1">
-                            ${user.idCardFront ? `<a href="${user.idCardFront}" target="_blank" class="text-indigo-600 underline text-xs">ရှေ့ပုံ</a>` : '-'} /
-                            ${user.idCardBack ? `<a href="${user.idCardBack}" target="_blank" class="text-indigo-600 underline text-xs">နောက်ပုံ</a>` : '-'}
+                        <td class="border border-gray-200 p-3 font-medium">${user.name || '-'}</td>
+                        <td class="border border-gray-200 p-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">${user.payment_method || '-'}</span></td>
+                        <td class="border border-gray-200 p-3">${user.phone || '-'}</td>
+                        <td class="border border-gray-200 p-3 space-x-2">
+                            ${user.idCardFront ? `<a href="${user.idCardFront}" target="_blank" class="text-indigo-600 underline font-semibold">ရှေ့ပုံ</a>` : '-'} /
+                            ${user.idCardBack ? `<a href="${user.idCardBack}" target="_blank" class="text-indigo-600 underline font-semibold">နောက်ပုံ</a>` : '-'}
                         </td>
-                        <td class="border border-gray-200 p-2.5">
-                            ${user.payQr ? `<a href="${user.payQr}" target="_blank" class="text-indigo-600 underline text-xs">QR ကြည့်ရန်</a>` : '-'}
+                        <td class="border border-gray-200 p-3">
+                            ${user.payQr ? `<a href="${user.payQr}" target="_blank" class="text-indigo-600 underline font-semibold">QR ကြည့်ရန်</a>` : '-'}
                         </td>
-                        <td class="border border-gray-200 p-2.5">
-                            <span class="px-2 py-1 rounded text-xs font-bold ${user.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                        <td class="border border-gray-200 p-3">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${user.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
                                 ${user.status || 'pending'}
                             </span>
                         </td>
-                        <td class="border border-gray-200 p-2.5">
-                            ${user.status !== 'approved' ? `<button onclick="approveUser('${user.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">Approve</button>` : '<span class="text-green-600 text-xs font-bold">ပြီးပြီ</span>'}
+                        <td class="border border-gray-200 p-3">
+                            ${user.status !== 'approved' ? `<button onclick="approveUser('${user.id}')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-700 shadow">Approve</button>` : '<span class="text-green-600 text-xs font-bold">အတည်ပြုပြီး</span>'}
                         </td>
                     `;
                     userTableBody.appendChild(row);
@@ -99,6 +106,8 @@
         }
 
         async function approveUser(id) {
+            if (!confirm('ဤအကောင့်ကို အတည်ပြုရန် သေချာပါသလား?')) return;
+
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, {
                     method: 'PATCH',
@@ -123,6 +132,7 @@
             }
         }
 
+        // Initial Load
         fetchUsers();
     </script>
 </body>
