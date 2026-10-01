@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Mymarketplace</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase v2 CDN ကို ပုံစံပြောင်းလဲ သုံးထားပါသည် -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-4">
@@ -36,7 +37,10 @@
     <script>
         const SUPABASE_URL = 'https://jmnkghz.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptbmtnaHpzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg0NDI5NjYxLCJleHAiOjIxMDAwMDU2NjF9.sQSU7CGTBXDWFQ_QtPiixJC';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Safe Initialization
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function fetchUsers() {
             const statusMessage = document.getElementById('statusMessage');
@@ -90,7 +94,7 @@
 
             } catch (error) {
                 console.error('Error fetching users:', error);
-                statusMessage.innerHTML = `<span class="text-red-500 font-bold">ချို့ယွင်းချက် ရှိနေပါသည်:</span><br><span class="text-red-600 text-xs">${error.message}</span>`;
+                statusMessage.innerHTML = `<span class="text-red-500 font-bold">ချို့ယွင်းချက် ဖြစ်ပေါ်နေပါသည်:</span><br><span class="text-red-600 text-xs">${error.message}</span>`;
             }
         }
 
@@ -111,6 +115,7 @@
             }
         }
 
+        // Run on load
         fetchUsers();
     </script>
 </body>
