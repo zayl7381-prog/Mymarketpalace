@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - KYC စစ်ဆေးရန်</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-md border">
+    <h2 class="text-xl font-bold mb-4 text-center text-indigo-600">🛡️ Admin KYC စစ်ဆေးရေး Panel</h2>
+    
+    <div id="loading" class="text-center py-4 text-gray-500">Data များ ရယူနေသည်...</div>
+    <div id="userList" class="space-y-4 hidden"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://jtczoggoxwjavjmnkghz.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_GT4Qk9qsU7CGTBXDWFQ_QtPiixjC';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function loadPendingUsers() {
+      const { data: users, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('status', 'pending_kyc');
+
+      document.getElementById('loading').classList.add('hidden');
+      const container = document.getElementById('userList');
+      container.classList.remove('hidden');
+      container.innerHTML = '';
+
+      if (error) {
+        alert('Error: ' + error.message);
+        return;
+      }
+
+      if (!users || users.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-500">စစ်ဆေးရန် လျှောက်လွှာအသစ် မရှိပါ။</p>';
+        return;
+      }
+
+      users.forEach(u => {
+        const card = document.createElement('div');
+        card.className = "p-4 border rounded-xl bg-gray-50 space-y-2";
+        card.innerHTML = `
+          <div class="flex justify-between items-center border-b pb-2">
+            <p class="font-bold text-gray-800">${u.name} (${u.phone})</p>
+            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Pending</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs pt-2">
+            <div>
+              <p class="font-semibold text-gray-600 mb-1">🪪 မှတ်ပုံတင် (ရှေ့/နောက်):</p>
+              <a href="${u.nid_front_url}" target="_blank" class="text-blue-600 underline block">အရှေ့ပုံ ကြည့်ရန်</a>
+              <a href="${u.nid_back_url}" target="_blank" class="text-blue-600 underline block">အနောက်ပုံ ကြည့်ရန်</a>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-600 mb-1">💳 QR Code:</p>
+              <a href="${u.payment_qr_url}" target="_blank" class="text-blue-600 underline">Payment QR ကြည့်ရန်</a>
+            </div>
+          </div>
+          <button onclick="approveUser('${u.id}')" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold text-xs hover:bg-green-700 mt-2">
+            ✅ အကောင့် အတည်ပြုပေးမည် (Approve)
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function approveUser(id) {
+      const { error } = await supabase
+        .from('users')
+        .update({ status: 'approved' })
+        .eq('id', id);
+
+      if (error) {
+        alert('မအောင်မြင်ပါ: ' + error.message);
+      } else {
+        alert('အကောင့် အတည်ပြုပြီးပါပြီ!');
+        loadPendingUsers();
+      }
+    }
+
+    loadPendingUsers();
+  </script>
+</body>
+</html>
