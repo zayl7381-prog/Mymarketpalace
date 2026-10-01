@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Mymarketplace</title>
-    <!-- Supabase v2 CDN ကို ပုံစံပြောင်းလဲ သုံးထားပါသည် -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-4">
@@ -37,10 +35,6 @@
     <script>
         const SUPABASE_URL = 'https://jmnkghz.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptbmtnaHpzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg0NDI5NjYxLCJleHAiOjIxMDAwMDU2NjF9.sQSU7CGTBXDWFQ_QtPiixJC';
-        
-        // Safe Initialization
-        const { createClient } = window.supabase;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function fetchUsers() {
             const statusMessage = document.getElementById('statusMessage');
@@ -48,13 +42,19 @@
             const userTableBody = document.getElementById('userTableBody');
 
             try {
-                const { data: users, error } = await supabase
-                    .from('users')
-                    .select('*');
+                // Fetch directly using Supabase REST API
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
 
-                if (error) {
-                    throw error;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+
+                const users = await response.json();
 
                 if (!users || users.length === 0) {
                     statusMessage.innerText = 'လျှောက်လွှာ မရှိသေးပါ။';
@@ -100,12 +100,20 @@
 
         async function approveUser(id) {
             try {
-                const { error } = await supabase
-                    .from('users')
-                    .update({ status: 'approved' })
-                    .eq('id', id);
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ status: 'approved' })
+                });
 
-                if (error) throw error;
+                if (!response.ok) {
+                    throw new Error('Approval failed');
+                }
 
                 alert('အကောင့်ကို အောင်မြင်စွာ အတည်ပြုပြီးပါပြီ!');
                 fetchUsers(); 
