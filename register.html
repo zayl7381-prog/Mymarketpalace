@@ -90,7 +90,7 @@
 
             } catch (error) {
                 console.error('Error fetching users:', error);
-                statusMessage.innerHTML = `<span class="text-red-500">ချို့ယွင်းချက် ရှိနေပါသည်: ${error.message}</span>`;
+                statusMessage.innerHTML = `<span class="text-red-500 font-bold">ချို့ယွင်းချက် ရှိနေပါသည်:</span><br><span class="text-red-600 text-xs">${error.message}</span>`;
             }
         }
 
