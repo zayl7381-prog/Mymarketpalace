@@ -1,0 +1,59 @@
+!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account ဖွင့်ရန် - C2C Marketplace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md border mt-5">
+    <h2 class="text-xl font-bold mb-4 text-center text-indigo-600">📝 အကောင့်သစ်ဖွင့်ရန်</h2>
+    <p class="text-xs text-gray-500 mb-4 text-center">အကောင့်ဖွင့်ခ ၃,၀၀၀ ကျပ် လွှဲပြောင်းပြီး အချက်အလက်များ ဖြည့်သွင်းပါ</p>
+    
+    <form id="regForm" class="space-y-3">
+      <input type="text" id="regName" placeholder="အမည်" required class="w-full p-2.5 border rounded-lg text-sm">
+      <input type="tel" id="regPhone" placeholder="ဖုန်းနံပါတ် (KPay / Wave နံပါတ်)" required class="w-full p-2.5 border rounded-lg text-sm">
+      <input type="password" id="regPassword" placeholder="စကားဝှက် (Password)" required class="w-full p-2.5 border rounded-lg text-sm">
+      
+      <div class="border-t pt-3">
+        <label class="block text-xs font-bold text-gray-700 mb-1">🪪 မှတ်ပုံတင် ရှေ့/နောက် ပုံ Link များ</label>
+        <input type="url" id="nidFront" placeholder="မှတ်ပုံတင် (အရှေ့) Image Direct Link" required class="w-full p-2.5 border rounded-lg text-sm mb-2">
+        <input type="url" id="nidBack" placeholder="မှတ်ပုံတင် (အနောက်) Image Direct Link" required class="w-full p-2.5 border rounded-lg text-sm">
+      </div>
+
+      <div class="border-t pt-3">
+        <label class="block text-xs font-bold text-gray-700 mb-1">💳 မိမိ၏ KPay / Wave QR Code Link</label>
+        <input type="url" id="payQr" placeholder="KPay / Wave QR Code Image Link" required class="w-full p-2.5 border rounded-lg text-sm">
+      </div>
+
+      <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700 mt-2">
+        အကောင့်ဖွင့်ရန် လျှောက်ထားမည်
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://jtczoggoxwjavjmnkghz.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_GT4Qk9qsU7CGTBXDWFQ_QtPiixjC'
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.getElementById('regForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const user = {
+        name: document.getElementById('regName').value,
+        phone: document.getElementById('regPhone').value,
+        password: document.getElementById('regPassword').value,
+        nid_front_url: document.getElementById('nidFront').value,
+        nid_back_url: document.getElementById('nidBack').value,
+        payment_qr_url: document.getElementById('payQr').value,
+        status: 'pending_kyc'
+      };
+
+      const { error } = await supabase.from('users').insert([user]);
+      if (error) {
+        alert('မအောင်မြင်ပါ: ' + error.message);
+      } else {
+        alert('အကောင့်လျှောက်ထားပြီးပါပြီ! Admin က စစ်ဆေးပြီးပါက အကောင့်ပွင့်ပါမည်။');
+        document.getElementById('regForm').reset();
