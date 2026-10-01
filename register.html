@@ -11,7 +11,7 @@
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-bold text-indigo-600 mb-6 text-center">🛡️ Admin Dashboard - အကောင့်လျှောက်လွှာများ</h2>
         
-        <div id="loading" class="text-center py-4 text-gray-500">အချက်အလက်များကို ရယူနေပါသည်...</div>
+        <div id="statusMessage" class="text-center py-4 text-gray-600 font-medium">အချက်အလက်များကို ရယူနေပါသည်...</div>
         
         <div class="overflow-x-auto">
             <table class="w-full border-collapse border border-gray-200 hidden" id="userTable">
@@ -31,7 +31,6 @@
                 </tbody>
             </table>
         </div>
-        <div id="noData" class="text-center py-8 text-gray-500 hidden">လျှောက်လွှာ မရှိသေးပါ (သို့မဟုတ်) Database ချိတ်ဆက်မှု စစ်ဆေးပါ။</div>
     </div>
 
     <script>
@@ -40,27 +39,25 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function fetchUsers() {
-            const loading = document.getElementById('loading');
+            const statusMessage = document.getElementById('statusMessage');
             const userTable = document.getElementById('userTable');
             const userTableBody = document.getElementById('userTableBody');
-            const noData = document.getElementById('noData');
 
             try {
                 const { data: users, error } = await supabase
                     .from('users')
                     .select('*');
 
-                loading.style.display = 'none';
-
                 if (error) {
                     throw error;
                 }
 
                 if (!users || users.length === 0) {
-                    noData.style.display = 'block';
+                    statusMessage.innerText = 'လျှောက်လွှာ မရှိသေးပါ။';
                     return;
                 }
 
+                statusMessage.style.display = 'none';
                 userTable.style.display = 'table';
                 userTableBody.innerHTML = '';
 
@@ -93,9 +90,7 @@
 
             } catch (error) {
                 console.error('Error fetching users:', error);
-                loading.style.display = 'none';
-                noData.style.display = 'block';
-                noData.innerText = 'အမှားအယွင်း ဖြစ်ပေါ်သည်: ' + error.message;
+                statusMessage.innerHTML = `<span class="text-red-500">ချို့ယွင်းချက် ရှိနေပါသည်: ${error.message}</span>`;
             }
         }
 
