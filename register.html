@@ -3,57 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>အကောင့်ဖွင့်ရန် - Mymarketplace</title>
+    <title>Admin Dashboard - Mymarketplace</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center text-indigo-600 mb-4">📝 အကောင့်သစ်ဖွင့်ရန်</h2>
-        <p class="text-sm text-gray-600 text-center mb-6">အကောင့်ဖွင့်ခ ၂,၀၀၀ ကျပ် လွှဲပြောင်းပြီး အချက်အလက်များကို ဖြည့်သွင်းပါ</p>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+        <h2 class="text-2xl font-bold text-indigo-600 mb-6 text-center">🛡️ Admin Dashboard - အကောင့်လျှောက်လွှာများ</h2>
         
-        <form id="registerForm" class="space-y-4">
-            <div>
-                <input type="text" id="name" placeholder="အမည်" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-            
-            <!-- ငွေလွှဲမည့် နည်းလမ်းရွေးချယ်ရန် (KPay / Wave) -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">🏦 ငွေပေးချေမည့် နည်းလမ်း</label>
-                <select id="paymentMethod" required class="w-full p-2.5 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="" disabled selected>KPay (သို့မဟုတ်) Wave ရွေးပါ</option>
-                    <option value="KPay">KBZ Pay (KPay)</option>
-                    <option value="Wave">Wave Money</option>
-                </select>
-            </div>
-
-            <div>
-                <input type="text" id="phone" placeholder="ဖုန်းနံပါတ် (KPay / Wave နံပါတ်)" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-            <div>
-                <input type="password" id="password" placeholder="စကားဝှက် (Password)" required class="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-            
-            <!-- မှတ်ပုံတင် ရှေ့/နောက် ပုံတင်ရန် -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">🪪 မှတ်ပုံတင် (အရှေ့) ပုံတင်ရန်</label>
-                <input type="file" id="idCardFrontFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">🪪 မှတ်ပုံတင် (အနောက်) ပုံတင်ရန်</label>
-                <input type="file" id="idCardBackFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
-            </div>
-            
-            <!-- မိမိ၏ QR Code ပုံတင်ရန် -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">💳 မိမိ၏ KPay / Wave QR Code ပုံတင်ရန်</label>
-                <input type="file" id="payQrFile" accept="image/*" required class="w-full p-2.5 border rounded-lg bg-white">
-            </div>
-
-            <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-indigo-700 transition">
-                အကောင့်ဖွင့်ရန် လျှောက်ထားမည်
-            </button>
-        </form>
+        <div id="loading" class="text-center py-4 text-gray-500">အချက်အလက်များကို ရယူနေပါသည်...</div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse border border-gray-200 hidden" id="userTable">
+                <thead>
+                    <tr class="bg-indigo-50 text-indigo-700 text-sm">
+                        <th class="border border-gray-200 p-2.5">အမည်</th>
+                        <th class="border border-gray-200 p-2.5">ငွေပေးချေမှု</th>
+                        <th class="border border-gray-200 p-2.5">ဖုန်းနံပါတ်</th>
+                        <th class="border border-gray-200 p-2.5">မှတ်ပုံတင် (ရှေ့/နောက်)</th>
+                        <th class="border border-gray-200 p-2.5">QR Code</th>
+                        <th class="border border-gray-200 p-2.5">အခြေအနေ</th>
+                        <th class="border border-gray-200 p-2.5">လုပ်ဆောင်ချက်</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody" class="text-sm text-gray-700">
+                    <!-- Data will be loaded here dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <div id="noData" class="text-center py-8 text-gray-500 hidden">လျှောက်လွှာ မရှိသေးပါ။</div>
     </div>
 
     <script>
@@ -61,70 +39,82 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptbmtnaHpzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg0NDI5NjYxLCJleHAiOjIxMDAwMDU2NjF9.sQSU7CGTBXDWFQ_QtPiixJC';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const form = document.getElementById('registerForm');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const paymentMethod = document.getElementById('paymentMethod').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-
-            const frontFile = document.getElementById('idCardFrontFile').files[0];
-            const backFile = document.getElementById('idCardBackFile').files[0];
-            const qrFile = document.getElementById('payQrFile').files[0];
+        async function fetchUsers() {
+            const loading = document.getElementById('loading');
+            const userTable = document.getElementById('userTable');
+            const userTableBody = document.getElementById('userTableBody');
+            const noData = document.getElementById('noData');
 
             try {
-                alert('ပုံများကို တင်နေပါသည်... ခဏစောင့်ပါ');
-
-                // ၁။ မှတ်ပုံတင် ရှေ့ပုံတင်ခြင်း
-                const frontExt = frontFile.name.split('.').pop();
-                const frontFileName = `front_${Date.now()}.${frontExt}`;
-                const { error: frontError } = await supabase.storage.from('images').upload(frontFileName, frontFile);
-                if (frontError) throw frontError;
-                const frontImageUrl = supabase.storage.from('images').getPublicUrl(frontFileName).data.publicUrl;
-
-                // ၂။ မှတ်ပုံတင် နောက်ပုံတင်ခြင်း
-                const backExt = backFile.name.split('.').pop();
-                const backFileName = `back_${Date.now()}.${backExt}`;
-                const { error: backError } = await supabase.storage.from('images').upload(backFileName, backFile);
-                if (backError) throw backError;
-                const backImageUrl = supabase.storage.from('images').getPublicUrl(backFileName).data.publicUrl;
-
-                // ၃။ QR Code ပုံတင်ခြင်း
-                const qrExt = qrFile.name.split('.').pop();
-                const qrFileName = `qr_${Date.now()}.${qrExt}`;
-                const { error: qrError } = await supabase.storage.from('images').upload(qrFileName, qrFile);
-                if (qrError) throw qrError;
-                const qrImageUrl = supabase.storage.from('images').getPublicUrl(qrFileName).data.publicUrl;
-
-                // ၄။ Database သို့ သိမ်းဆືခြင်း (Payment Method အပါအဝင်)
-                const { error: dbError } = await supabase
+                const { data: users, error } = await supabase
                     .from('users')
-                    .insert([
-                        { 
-                            name: name, 
-                            payment_method: paymentMethod,
-                            phone: phone, 
-                            password: password, 
-                            idCardFront: frontImageUrl, 
-                            idCardBack: backImageUrl, 
-                            payQr: qrImageUrl,
-                            status: 'pending' 
-                        }
-                    ]);
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                if (dbError) throw dbError;
+                loading.style.display = 'none';
 
-                alert('အကောင့်လျှောက်လွှာ တင်ခြင်း အောင်မြင်ပါသည်!');
-                form.reset();
+                if (error) throw error;
+
+                if (!users || users.length === 0) {
+                    noData.style.display = 'block';
+                    return;
+                }
+
+                userTable.style.display = 'table';
+                userTableBody.innerHTML = '';
+
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 text-center';
+                    
+                    row.innerHTML = `
+                        <td class="border border-gray-200 p-2.5 font-medium">${user.name || '-'}</td>
+                        <td class="border border-gray-200 p-2.5"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">${user.payment_method || '-'}</span></td>
+                        <td class="border border-gray-200 p-2.5">${user.phone || '-'}</td>
+                        <td class="border border-gray-200 p-2.5 space-x-1">
+                            ${user.idCardFront ? `<a href="${user.idCardFront}" target="_blank" class="text-indigo-600 underline text-xs">ရှေ့ပုံ</a>` : '-'} /
+                            ${user.idCardBack ? `<a href="${user.idCardBack}" target="_blank" class="text-indigo-600 underline text-xs">နောက်ပုံ</a>` : '-'}
+                        </td>
+                        <td class="border border-gray-200 p-2.5">
+                            ${user.payQr ? `<a href="${user.payQr}" target="_blank" class="text-indigo-600 underline text-xs">QR ကြည့်ရန်</a>` : '-'}
+                        </td>
+                        <td class="border border-gray-200 p-2.5">
+                            <span class="px-2 py-1 rounded text-xs font-bold ${user.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${user.status || 'pending'}
+                            </span>
+                        </td>
+                        <td class="border border-gray-200 p-2.5">
+                            ${user.status !== 'approved' ? `<button onclick="approveUser('${user.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">Approve</button>` : '<span class="text-green-600 text-xs font-bold">ပြီးပြီ</span>'}
+                        </td>
+                    `;
+                    userTableBody.appendChild(row);
+                });
 
             } catch (error) {
-                console.error('Error:', error);
-                alert('အမှားအယွင်း ဖြစ်ပေါ်သွားပါသည်: ' + error.message);
+                console.error('Error fetching users:', error);
+                loading.innerText = 'အချက်အလက်များ ရယူရာတွင် အမှားအယွင်း ရှိပါသည်';
             }
-        });
+        }
+
+        async function approveUser(id) {
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .update({ status: 'approved' })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('အကောင့်ကို အောင်မြင်စွာ အတည်ပြုပြီးပါပြီ!');
+                fetchUsers(); // Refresh table
+            } catch (error) {
+                console.error('Error approving user:', error);
+                alert('အတည်ပြုရာတွင် အမှားအယွင်း ဖြစ်ပေါ်သွားပါသည်');
+            }
+        }
+
+        // Page ဖွင့်သည်နှင့် အချက်အလက်များ ဆွဲထုတ်ရန်
+        fetchUsers();
     </script>
 </body>
 </html>
